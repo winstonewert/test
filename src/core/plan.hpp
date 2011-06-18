@@ -81,9 +81,6 @@ namespace org_biologicinstitute_stylus
 		void clear();
 
 		bool evaluate(UNIT nValue);
-		UNIT evaluatePerformance(UNIT nValue);
-        bool active();
-        UNIT getPerformancePrecision();
 		
 	protected:
 		enum TRIALCONDITIONMODE
@@ -191,14 +188,12 @@ namespace org_biologicinstitute_stylus
 		void clear();
 		
 		size_t getMutationsPerAttempt() const;
-        void produceMutations(MutationSource & source, MutationSelector & selector);
 		
 		void load(XMLDocument* pxd, xmlNodePtr pxn);
 		void toXML(XMLStream& xs);
 		
 	private:
 		MUTATIONSPERATTEMPTARRAY _vecMutationsPerAttempt;
-        bool _fExhaustive;
 	};
 	
 	/**
@@ -220,12 +215,9 @@ namespace org_biologicinstitute_stylus
 		
 		bool evaluate(PLANCONDITION pc, UNIT nValue);
 		size_t getMutationsPerAttempt() const;
-        void produceMutations(MutationSource & source, MutationSelector & selector);
 		
 		void load(XMLDocument* pxd, xmlNodePtr pxn);
 		void toXML(XMLStream& xs);
-
-        TrialCondition * getTrialCondition(PLANCONDITION pc);
 		
 	private:
 		STFLAGS _grfConditions;				///< Set of PLANCONDITION flags
@@ -384,9 +376,6 @@ namespace org_biologicinstitute_stylus
 		bool hasBases() const;
 		bool hasRange() const;
 		bool hasTransversion() const;
-
-        bool needsSourceIndex() const;
-        bool needsBases() const;
 		
 		size_t sourceIndex() const;
 		size_t targetIndex() const;
@@ -499,16 +488,11 @@ namespace org_biologicinstitute_stylus
 
 		bool hasConditions(STFLAGS grfConditions) const;
 		bool evaluateCondition(PLANCONDITION pc, UNIT nValue);
-        bool evaluatePerformance(PLANCONDITION pc, UNIT nValue, UNIT & nOutput);
 		size_t getMutationsPerAttempt() const;
-        void produceMutations(MutationSource & source, MutationSelector & selector);
-
-        void produceMutations(MutationSelector & selector, STFLAGS grfOptions, size_t iTrialInStep);
 		
 		void load(XMLDocument* pxd, xmlNodePtr pxn);
 		void toXML(XMLStream& xs);
 		
-        TrialCondition * getTrialCondition(PLANCONDITION pc);
 	private:
 		size_t _cTrials;
 		long _dIndex;
@@ -520,52 +504,6 @@ namespace org_biologicinstitute_stylus
 		
 		void clear();
 	};
-
-    class MutationSource
-    {
-        public:
-            MutationSource( Step & step, STFLAGS grfConditions, size_t iTrialInStep);
-
-            void getMutation(Mutation & mutation);
-            void produceMutations(MutationSelector & selector);
-        private:
-            Step & _step;
-            STFLAGS _grfConditions;
-            size_t _iTrialInStep;
-    };
-
-    class MutationSelector
-    {
-    public:
-        MutationSelector(Plan & plan);
-        bool addMutation(Mutation & mutation);
-        void mutationFinalize();
-        bool selectMutation();
-        bool getRollbackPossible();
-
-        typedef std::vector<Mutation> MUTATIONVECTOR;
-        // TODO: figure out why this wouldn't go where I wanted it
-        struct Consideration
-        {
-            Consideration();
-            Unit value;
-            bool fValidMutations;
-            bool fValidated;
-            MUTATIONVECTOR mutations;
-        };
-        typedef std::vector< Consideration > CONSIDERATIONVECTOR;
-
-    private:
-        Consideration & _current();
-        Consideration & _pickMutation();
-
-        Plan & _plan;
-
-        CONSIDERATIONVECTOR _considerations;
-        bool _fFieldsMissing;
-        bool _fAcceptedMutation;
-        UNIT _best;
-    };
 	
 	/**
 	 * \brief An executable plan
@@ -585,15 +523,11 @@ namespace org_biologicinstitute_stylus
 		bool isExecuting() const;
 		
 		bool evaluateCondition(PLANCONDITION pc, UNIT nValue);
-        UNIT evaluatePerformance();
-        bool evaluateConditions();
-        bool applyMutation(Mutation & mutation);
 		
 		void load(const char* pxmlPlan);
 		void toXML(XMLStream& xs);
 
 		size_t getActualTrialCount(size_t cTrials, size_t iTrialFirst);
-        UNIT getPerformancePrecision();
 
 	private:
 		bool _fExecuting;					///< Plan is actively executing
@@ -621,11 +555,6 @@ namespace org_biologicinstitute_stylus
 		void endExecution();
 
 		size_t getMutationsPerAttempt() const;
-        bool evaluatePerformance(PLANCONDITION pc, UNIT nValue, UNIT & nOutput);
-        void produceMutations(MutationSource & source, MutationSelector & selector);
-        UNIT getPerformancePrecision(PLANCONDITION pc);
-        TrialCondition * getTrialCondition(PLANCONDITION pc);
-        TrialCondition * getPrimaryTrialCondition();
 	};
 	
 	/**

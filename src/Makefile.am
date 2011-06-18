@@ -18,5 +18,5 @@
 
 include $(top_srcdir)/Makerules.in
 
-SUBDIRS = core include test
+SUBDIRS = core include
 
